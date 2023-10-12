@@ -54,11 +54,13 @@ class _MyAppState extends State<MyApp> {
                             '${progress.downloadedBytes ~/ 1024} / ${progress.totalBytes! ~/ 1024} kb',
                             style: const TextStyle(color: Colors.red)),
                       SizedBox(
-                          width: 120,
-                          height: 120,
-                          child: CircularProgressIndicator(
-                              color: Colors.red,
-                              value: progress.progressPercentage.value)),
+                        width: 120,
+                        height: 120,
+                        child: CircularProgressIndicator(
+                          color: Colors.red,
+                          value: progress.progressPercentage.value,
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -84,7 +86,11 @@ class _MyAppState extends State<MyApp> {
               await FastCachedImageConfig.deleteCachedImage(imageUrl: url1);
               setState(() => log = 'deleted image $url1');
               await Future.delayed(
-                  const Duration(seconds: 2), () => setState(() => log = null));
+                const Duration(seconds: 2),
+                () => setState(
+                  () => log = null,
+                ),
+              );
             },
             child: const Text('delete cached image'),
           ),
@@ -94,7 +100,11 @@ class _MyAppState extends State<MyApp> {
               FastCachedImageConfig.clearAllCachedImages();
               setState(() => log = 'All cached images deleted');
               await Future.delayed(
-                  const Duration(seconds: 2), () => setState(() => log = null));
+                const Duration(seconds: 2),
+                () => setState(
+                  () => log = null,
+                ),
+              );
             },
             child: const Text('delete all cached images'),
           ),

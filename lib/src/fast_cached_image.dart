@@ -109,32 +109,32 @@ class FastCachedImage extends StatefulWidget {
   ///[FastCachedImage] creates a widget to display network images. This widget downloads the network image
   ///when this widget is build for the first time. Later whenever this widget is called the image will be displayed from
   ///the downloaded database instead of the network. This can avoid unnecessary downloads and load images much faster.
-  const FastCachedImage(
-      {required this.url,
-      this.scale = 1.0,
-      this.errorBuilder,
-      this.semanticLabel,
-      this.loadingBuilder,
-      this.excludeFromSemantics = false,
-      this.disableErrorLogs = false,
-      this.width,
-      this.height,
-      this.color,
-      this.opacity,
-      this.colorBlendMode,
-      this.fit,
-      this.alignment = Alignment.center,
-      this.repeat = ImageRepeat.noRepeat,
-      this.centerSlice,
-      this.matchTextDirection = false,
-      this.gaplessPlayback = false,
-      this.isAntiAlias = false,
-      this.filterQuality = FilterQuality.low,
-      this.fadeInDuration = const Duration(milliseconds: 500),
-      int? cacheWidth,
-      int? cacheHeight,
-      Key? key})
-      : super(key: key);
+  const FastCachedImage({
+    super.key,
+    required this.url,
+    this.scale = 1.0,
+    this.errorBuilder,
+    this.semanticLabel,
+    this.loadingBuilder,
+    this.excludeFromSemantics = false,
+    this.disableErrorLogs = false,
+    this.width,
+    this.height,
+    this.color,
+    this.opacity,
+    this.colorBlendMode,
+    this.fit,
+    this.alignment = Alignment.center,
+    this.repeat = ImageRepeat.noRepeat,
+    this.centerSlice,
+    this.matchTextDirection = false,
+    this.gaplessPlayback = false,
+    this.isAntiAlias = false,
+    this.filterQuality = FilterQuality.low,
+    this.fadeInDuration = const Duration(milliseconds: 500),
+    int? cacheWidth,
+    int? cacheHeight,
+  });
 
   @override
   State<FastCachedImage> createState() => _FastCachedImageState();
@@ -194,7 +194,10 @@ class _FastCachedImageState extends State<FastCachedImage>
     if (_imageResponse?.error != null && widget.errorBuilder != null) {
       _logErrors(_imageResponse?.error);
       return widget.errorBuilder!(
-          context, Object, StackTrace.fromString(_imageResponse!.error!));
+        context,
+        Object,
+        StackTrace.fromString(_imageResponse!.error!),
+      );
     }
 
     return SizedBox(
@@ -411,8 +414,10 @@ class FastCachedImageConfig {
     }
 
     if (_imageKeyBox!.keys.contains(key) && _imageBox!.keys.contains(key)) {
-      Uint8List? data = _imageBox!.get(key);
-      if (data == null || data.isEmpty) return null;
+      Uint8List? data =
+          Uint8List.fromList((_imageBox!.get(key) as List).cast());
+
+      if (data.isEmpty) return null;
 
       return data;
     }
@@ -424,7 +429,7 @@ class FastCachedImageConfig {
   static Future<void> _saveImage(String url, Uint8List image) async {
     final key = _keyFromUrl(url);
 
-    _imageKeyBox!.put(key, DateTime.now());
+    _imageKeyBox!.put(key, DateTime.now().toIso8601String());
     _imageBox!.put(key, image);
   }
 
@@ -433,7 +438,7 @@ class FastCachedImageConfig {
     DateTime today = DateTime.now();
 
     for (final key in _imageKeyBox!.keys) {
-      DateTime? dateCreated = _imageKeyBox!.get(key);
+      DateTime? dateCreated = DateTime.tryParse(_imageKeyBox!.get(key));
 
       if (dateCreated == null) continue;
 

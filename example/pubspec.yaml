@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   fast_cached_network_image:
     path: ../
+  isar_flutter_libs: ^4.0.0-dev.14
 
 dev_dependencies:
   flutter_test:
