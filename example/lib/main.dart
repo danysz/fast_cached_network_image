@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> {
           const SizedBox(height: 12),
           MaterialButton(
             onPressed: () async {
-              await FastCachedImageConfig.clearAllCachedImages();
+              FastCachedImageConfig.clearAllCachedImages();
               setState(() => log = 'All cached images deleted');
               await Future.delayed(
                   const Duration(seconds: 2), () => setState(() => log = null));
