@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -382,26 +383,47 @@ class FastCachedImageConfig {
   static Box? _imageKeyBox;
   static Box? _imageBox;
   static bool _isInitialized = false;
+  static String? _cacheDir;
   static const String _notInitMessage =
       'FastCachedImage is not initialized. Please use FastCachedImageConfig.init to initialize FastCachedImage';
 
   ///[init] function initializes the cache management system. Use this code only once in the app in main to avoid errors.
-  /// You can provide a [subDir] where the boxes should be stored.
-  ///[clearCacheAfter] property is used to set a  duration after which the cache will be cleared.
-  ///Default value of [clearCacheAfter] is 7 days which means if [clearCacheAfter] is set to null,
+  ///
+  /// [clearCacheAfter] property is used to set a duration after which the cache will be cleared.
+  /// Default value of [clearCacheAfter] is 7 days which means if [clearCacheAfter] is set to null,
   /// an image cached today will be cleared when you open the app after 7 days from now.
-  static Future<void> init({String? subDir, Duration? clearCacheAfter}) async {
+  static Future<void> init({Duration? clearCacheAfter}) async {
     if (_isInitialized) return;
 
     clearCacheAfter ??= const Duration(days: 7);
 
-    final dir = await getTemporaryDirectory();
-    Hive.defaultDirectory = dir.path;
+    final appDocuments = (await getApplicationDocumentsDirectory()).path;
+    final cacheDir = Directory('$appDocuments/fast_cached_image');
+    if (!cacheDir.existsSync()) {
+      cacheDir.createSync(recursive: true);
+    }
 
+    _cacheDir = cacheDir.path;
     _isInitialized = true;
 
-    _imageKeyBox = Hive.box(name: _BoxNames.imagesKeyBox);
-    _imageBox = Hive.box(name: _BoxNames.imagesBox);
+    try {
+      _imageKeyBox = Hive.box(
+        name: _BoxNames.imagesKeyBox,
+        directory: _cacheDir,
+        // this is for using SQL for these boxes, so that the size of the box
+        // is not constrained.
+        encryptionKey: 'encryptionKey',
+      );
+      _imageBox = Hive.box(
+        name: _BoxNames.imagesBox,
+        directory: _cacheDir,
+        // this is for using SQL for these boxes, so that the size of the box
+        // is not constrained.
+        encryptionKey: 'encryptionKey',
+      );
+    } catch (e) {
+      debugPrint('FastCachedImage: $e');
+    }
     _clearOldCache(clearCacheAfter);
   }
 
@@ -495,8 +517,20 @@ class FastCachedImageConfig {
     _imageKeyBox?.deleteFromDisk();
     _imageBox?.deleteFromDisk();
     if (showLog) debugPrint('FastCacheImage: All cache cleared.');
-    _imageKeyBox = Hive.box(name: _BoxNames.imagesKeyBox);
-    _imageBox = Hive.box(name: _BoxNames.imagesBox);
+    _imageKeyBox = Hive.box(
+      name: _BoxNames.imagesKeyBox,
+      directory: _cacheDir,
+      // this is for using SQL for these boxes, so that the size of the box
+      // is not constrained.
+      encryptionKey: 'encryptionKey',
+    );
+    _imageBox = Hive.box(
+      name: _BoxNames.imagesBox,
+      directory: _cacheDir,
+      // this is for using SQL for these boxes, so that the size of the box
+      // is not constrained.
+      encryptionKey: 'encryptionKey',
+    );
   }
 
   ///[_checkInit] method ensures the hive db is initialized. Not part of public API
