@@ -1,4 +1,4 @@
-import 'package:fast_cached_network_image/src/fast_cached_image.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
