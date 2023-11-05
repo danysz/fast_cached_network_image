@@ -1,9 +1,9 @@
 name: fast_cached_network_image
 description: A flutter package to cache network image fastly without any native dependencies.You can add beautiful loaders, percentage indicators and error builder.
-version: 1.2.0
-homepage: https://github.com/CHRISTOPANANJICKAL/fast_cached_network_image
-repository: https://github.com/CHRISTOPANANJICKAL/fast_cached_network_image
-issue_tracker: https://github.com/CHRISTOPANANJICKAL/fast_cached_network_image/issues
+version: 1.3.0
+homepage: https://github.com/danysz/fast_cached_network_image
+repository: https://github.com/danysz/fast_cached_network_image
+issue_tracker: https://github.com/danysz/fast_cached_network_image/issues
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
@@ -15,9 +15,9 @@ dependencies:
 
   dio: ^5.1.1
   hive_flutter: ^1.1.0
-  uuid: ^3.0.7
+  uuid: ^4.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
